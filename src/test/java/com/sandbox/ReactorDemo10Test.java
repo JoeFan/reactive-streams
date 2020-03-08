@@ -1,24 +1,23 @@
-package com.github.adamldavis;
+package com.sandbox;
 
-import static com.github.adamldavis.DemoData.*;
-import static org.junit.Assert.*;
-
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-
-import com.sandbox.ReactorDemo;
 import org.junit.Test;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import reactor.test.publisher.TestPublisher;
 import reactor.util.context.Context;
 
-public class ReactorDemoTest {
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.sandbox.DemoData.squares;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+
+/** Identical to ReactorDemoTest but using Java 10+ var. */
+public class ReactorDemo10Test {
 
 
     ReactorDemo demo = new ReactorDemo();
@@ -38,7 +37,7 @@ public class ReactorDemoTest {
 
     @Test
     public void testStepVerifier_Mono_error() {
-        Mono<String> monoError = Mono.error(new RuntimeException("error"));
+        Mono monoError = Mono.error(new RuntimeException("error"));
 
         StepVerifier.create(monoError)
                 .expectErrorMessage("error")
@@ -47,7 +46,7 @@ public class ReactorDemoTest {
 
     @Test
     public void testStepVerifier_Mono_foo() {
-        Mono<String> foo = Mono.just("foo");
+        Mono foo = Mono.just("foo");
         StepVerifier.create(foo)
                 .expectNext("foo")
                 .verifyComplete();
@@ -55,7 +54,7 @@ public class ReactorDemoTest {
 
     @Test
     public void testStepVerifier_Flux() {
-        Flux<Integer> flux = Flux.just(1, 4, 9);
+        Flux flux = Flux.just(1, 4, 9);
 
         StepVerifier.create(flux)
                 .expectNext(1)
@@ -67,9 +66,9 @@ public class ReactorDemoTest {
 
     @Test
     public void testStepVerifier_Context_Wrong() {
-        Flux<Integer> flux = Flux.just(1).subscriberContext(Context.of("pid", 123));
+         Flux<Integer> flux = Flux.just(1).subscriberContext(Context.of("pid", 123));
 
-        Flux<String> stringFlux = flux.flatMap(i ->
+        Flux stringFlux = flux.flatMap(i ->
                         Mono.subscriberContext().map(ctx -> i + " pid: " + ctx.getOrDefault("pid", 0)));
 
         StepVerifier.create(stringFlux)
@@ -79,9 +78,9 @@ public class ReactorDemoTest {
 
     @Test
     public void testStepVerifier_Context_Right() {
-        Flux<Integer> flux = Flux.just(1);
+        Flux flux = Flux.just(1);
 
-        Flux<String> stringFlux = flux.flatMap(i ->
+        Flux stringFlux = flux.flatMap(i ->
                 Mono.subscriberContext().map(ctx -> i + " pid: " + ctx.getOrDefault("pid", 0)));
 
         StepVerifier.create(stringFlux.subscriberContext(Context.of("pid", 123)))
@@ -91,8 +90,8 @@ public class ReactorDemoTest {
 
     @Test
     public void test_TestPublisher() {
-        TestPublisher<Object> publisher = TestPublisher.create(); //1
-        Flux<Object> stringFlux = publisher.flux(); //2
+        TestPublisher<String> publisher = TestPublisher.create(); //1
+        Flux<String> stringFlux = publisher.flux(); //2
         List list = new ArrayList(); //3
 
         stringFlux.subscribe(next -> list.add(next), ex -> ex.printStackTrace()); //4
@@ -101,47 +100,6 @@ public class ReactorDemoTest {
         assertEquals(2, list.size()); //6
         assertEquals("foo", list.get(0));
         assertEquals("bar", list.get(1));
-    }
-
-    @Test
-    public void create_vs_range() {
-        Flux<String> flux1 = Flux.create(sink -> {
-            for (int i = 0; i < 3; i++) {
-                sink.next("i=" + i);
-            }
-            sink.complete();
-        });
-        // is identical to:
-        Flux<String> flux2 = Flux.range(0, 3)
-                .map(i -> "i=" + i);
-
-        StepVerifier.create(flux1)
-                .expectNext("i=0")
-                .expectNext("i=1")
-                .expectNext("i=2")
-                .verifyComplete();
-        StepVerifier.create(flux2)
-                .expectNext("i=0")
-                .expectNext("i=1")
-                .expectNext("i=2")
-                .verifyComplete();
-    }
-
-    @Test(timeout = 1000)
-    public void testpush() {
-        List<Integer> list = Flux.push((FluxSink<Integer> sink) -> {
-            sink.next(1).next(2).next(3).complete();
-        }).collectList().block();
-
-        assertEquals(3, list.size());
-    }
-
-    @Test(timeout = 1000)
-    public void testGenerate() {
-        Flux<Long> flux = ReactorDemo.exampleSquaresUsingGenerate();
-        List<Long> list = flux.collectList().block();
-
-        assertEquals(11, list.size());
     }
 
 }

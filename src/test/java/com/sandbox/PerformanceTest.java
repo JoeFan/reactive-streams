@@ -1,12 +1,5 @@
-package com.github.adamldavis;
+package com.sandbox;
 
-import static java.util.Arrays.*;
-import static org.junit.Assert.*;
-
-import com.sandbox.AkkaStreamsDemo;
-import com.sandbox.ReactiveStreamsDemo;
-import com.sandbox.ReactorDemo;
-import com.sandbox.RxJavaDemo;
 import org.junit.Before;
 import org.junit.Test;
 import reactor.core.publisher.Flux;
@@ -15,6 +8,10 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 
 public class PerformanceTest {

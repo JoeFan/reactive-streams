@@ -1,6 +1,5 @@
-package com.github.adamldavis;
+package com.sandbox;
 
-import com.sandbox.RxJavaDemo;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -14,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.github.adamldavis.DemoData.squares;
+import static com.sandbox.DemoData.squares;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 

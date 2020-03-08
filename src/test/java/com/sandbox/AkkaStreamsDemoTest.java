@@ -1,4 +1,4 @@
-package com.github.adamldavis;
+package com.sandbox;
 
 import akka.NotUsed;
 import akka.actor.ActorSystem;
@@ -11,8 +11,6 @@ import akka.stream.testkit.TestPublisher;
 import akka.stream.testkit.TestSubscriber;
 import akka.stream.testkit.javadsl.TestSink;
 import akka.stream.testkit.javadsl.TestSource;
-import com.sandbox.AkkaStreamsDemo;
-import com.sandbox.Channel;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import static com.github.adamldavis.DemoData.squares;
+import static com.sandbox.DemoData.squares;
 import static org.junit.Assert.*;
 
 public class AkkaStreamsDemoTest {
