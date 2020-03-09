@@ -39,7 +39,7 @@ public class Application {
         MessageConsumer messageConsumer = new MessageConsumer("Reactor");
         // using Reactor to consume messages:
         messageFlux.publishOn(Schedulers.newSingle("message-pub"))
-                .subscribeOn(Schedulers.elastic())
+                .subscribeOn(Schedulers.elastic())// schedulers类似于JAVA中的线程池，调度器会动态创建工作线程，线程数无上界，类似于 Execturos.newCachedThreadPool()
                 .onBackpressureBuffer(100) // 100 max buffer
                 .subscribe(s -> messageConsumer.accept(s));
 
@@ -51,8 +51,7 @@ public class Application {
     MessageConsumer createAkkaMessageConsumer(Flux<String> messageFlux, ActorSystem actorSystem) {
         MessageConsumer messageConsumer = new MessageConsumer("Akka");
         // using Akka Streams to consume messages:
-        ActorMaterializer mat = ActorMaterializer.create(actorSystem);
-
+        ActorMaterializer mat = ActorMaterializer.create(actorSystem);//ActorMaterializer把一个流式计算的BLUEPRINT（大纲、蓝本？）转换成一个运行的流，简单来说这就是用来编译akka提供的流式API的
         Source.fromPublisher(messageFlux)
                 .buffer(100, OverflowStrategy.backpressure()) // 100 max buffer
                 .to(Sink.foreach(msg -> messageConsumer.accept(msg)))
